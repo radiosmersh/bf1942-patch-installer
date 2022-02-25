@@ -1,0 +1,13 @@
+Battlefield 1942 v1.61 Retail / v1.612 Origin patched by henk on 23-2-2022
+version 2.1
+
+Fixes:
+~~~~~~
+* No Origin
+* Portable
+* Widescreen support - In game
+* Widescreen support - In menu
+* master.gamespy.com replaced with master.bf1942.org
+* Increased accessible ram from 2gb to 4gb
+* Removed this message from console:
+	 Error: failed  to add player <name> to buddylist. Couldn't locate player.
