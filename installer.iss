@@ -5,7 +5,7 @@
 AppId={{84CDC31D-1CEE-4367-859E-A53F702B519B}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-DefaultDirName=no
+CreateAppDir=No
 AllowNoIcons=yes
 DisableReadyPage=yes
 DisableDirPage=yes
