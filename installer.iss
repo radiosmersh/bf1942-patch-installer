@@ -5,16 +5,17 @@
 AppId={{84CDC31D-1CEE-4367-859E-A53F702B519B}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-CreateAppDir=No
 AllowNoIcons=yes
-DisableReadyPage=yes
+CreateAppDir=No
 DisableDirPage=yes
+DisableReadyPage=yes
+Uninstallable=No
+InfoBeforeFile=infobefore.txt
 PrivilegesRequired=admin
-Compression=lzma2/max
 OutputBaseFilename=bf1942_patch
 SetupIconFile=gfx\bf1942.ico
-InfoBeforeFile=infobefore.txt
-Uninstallable=No
+Compression=lzma2/max
+SolidCompression=yes
 
 [Files]
 Source: "files\Retail\BF1942.exe"; DestDir: "{code:GetInstallPath}"; Check: IsRetailInstalled
