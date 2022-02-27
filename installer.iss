@@ -29,9 +29,15 @@ Root: HKLM32; Subkey: "Software\Origin\EA GAMES\Battlefield 1942"; ValueType: st
 { Checkboxes and Radio buttons created on runtime do }
 { not scale their height automatically. }
 { See https://stackoverflow.com/q/30469660/850848 }
-procedure ScaleFixedHeightControl(Control: TButtonControl);
+procedure ScaleFixedSizeControl(Control: TButtonControl);
 begin
   Control.Height := ScaleY(Control.Height);
+  Control.Width := ScaleX(Control.Width);
+end;
+
+function GenerateCDKey(Param: String): String;
+begin
+	Result := GetDateTimeString('42yyyy/mm/dd1942hhnnss', '1', #0);
 end;
 
 var
