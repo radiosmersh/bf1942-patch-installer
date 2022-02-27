@@ -18,12 +18,19 @@ Compression=lzma2/max
 SolidCompression=yes
 
 [Files]
-Source: "files\Retail\BF1942.exe"; DestDir: "{code:GetInstallPath}"; Check: IsRetailInstalled
-Source: "files\Origin\BF1942.exe"; DestDir: "{code:GetInstallPath}"; Check: not IsRetailInstalled
+Source: files\Retail\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
+Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
+Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack1; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
+Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack2; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
+Source: files\Retail\contentCrc32.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailInstalled
+Source: files\Retail\Init.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailInstalled
+Source: {code:GetInstallPath}\BF1942.exe; DestDir: {code:GetInstallPath}; DestName: BF1942.exe.bak; Flags: external skipifsourcedoesntexist; Check: IsOriginInstalled
+Source: files\Origin\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: not IsOriginInstalled
+
 
 [Registry]
-Root: HKLM32; Subkey: "Software\EA GAMES\Battlefield 1942"; ValueType: string; ValueName: "GAMEDIR"; ValueData: "{code:GetInstallPath}"; Check: IsRetailInstalled; Flags: createvalueifdoesntexist
-Root: HKLM32; Subkey: "Software\Origin\EA GAMES\Battlefield 1942"; ValueType: string; ValueName: "GAMEDIR"; ValueData: "{code:GetInstallPath}"; Check: not IsRetailInstalled; Flags: createvalueifdoesntexist
+Root: HKLM32; Subkey: SOFTWARE\Electronic Arts\EA Games\Battlefield 1942\ergc; ValueType: string; ValueName: ergc; ValueData: {code:GenerateCDKey}; Check: IsRetailInstalled; Flags: createvalueifdoesntexist
+Root: HKLM32; Subkey: SOFTWARE\Origin\Battlefield 1942\ergc; ValueType: String; ValueName: ergc; ValueData: {code:GenerateCDKey}; Check: not IsRetailInstalled; Flags: createvalueifdoesntexist
 
 [Code]
 { WORKAROUND }
@@ -58,6 +65,11 @@ end;
 function IsRetailInstalled(): Boolean;
 begin
   Result := RetailVersionButton.Checked;
+end;
+
+function IsOriginInstalled(): Boolean;
+begin
+  Result := OriginVersionButton.Checked;
 end;
 
 procedure SetPaths;
@@ -104,8 +116,6 @@ begin
 end;
 
 procedure NextButtonOnClick(Sender: TObject);
-var
-  PrevDir: string;
 begin
   if (WizardForm.CurPageID = InstallDirPage.ID) then
       if not RetailVersionButton.Checked and not OriginVersionButton.Checked then 
@@ -120,8 +130,6 @@ begin
 end;
 
 procedure InitializeWizard();
-var
-buff: String;
 begin
   InstallDirPage := CreateInputDirPage(wpSelectDir, 'Select Battlefield 1942 installation directory',
                                     'Where should the patch be installed?', '',
@@ -137,13 +145,13 @@ begin
   RetailVersionButton.Parent := InstallDirPage.Surface;
   RetailVersionButton.Top := VersionTextLabel.Top + VersionTextLabel.Height + ScaleY(8);
   RetailVersionButton.Caption := 'v1.61 Retail';
-  ScaleFixedHeightControl(RetailVersionButton);
+  ScaleFixedSizeControl(RetailVersionButton);
   
   OriginVersionButton := TRadioButton.Create(WizardForm);
   OriginVersionButton.Parent := InstallDirPage.Surface;
-  OriginVersionButton.Top := RetailVersionButton.Top + RetailVersionButton.Height + ScaleY(8);
+  OriginVersionButton.Top := RetailVersionButton.Top + RetailVersionButton.Height;
   OriginVersionButton.Caption := 'v1.612 Origin';
-  ScaleFixedHeightControl(RetailVersionButton);
+  ScaleFixedSizeControl(OriginVersionButton);
 
   DestDirTextLabel := TLabel.Create(WizardForm);
   DestDirTextLabel.Parent := InstallDirPage.Surface;
