@@ -18,21 +18,33 @@ Compression=lzma2/max
 SolidCompression=yes
 
 [Files]
-Source: files\Retail\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
-Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
-Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack1; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
-Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack2; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailInstalled
-Source: files\Retail\contentCrc32.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailInstalled
-Source: files\Retail\Init.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailInstalled
-Source: {code:GetInstallPath}\BF1942.exe; DestDir: {code:GetInstallPath}; DestName: BF1942.exe.bak; Flags: external skipifsourcedoesntexist; Check: IsOriginInstalled
-Source: files\Origin\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: not IsOriginInstalled
+Source: files\Retail\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
+Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
+Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack1; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
+Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack2; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
+Source: files\Retail\contentCrc32.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailBtnChecked
+Source: files\Retail\Init.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailBtnChecked
+Source: {code:GetInstallPath}\BF1942.exe; DestDir: {code:GetInstallPath}; DestName: BF1942.exe.bak; Flags: external skipifsourcedoesntexist;
+Source: files\Origin\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: not IsOriginBtnChecked
 
 
 [Registry]
-Root: HKLM32; Subkey: SOFTWARE\Electronic Arts\EA Games\Battlefield 1942\ergc; ValueType: string; ValueName: ergc; ValueData: {code:GenerateCDKey}; Check: IsRetailInstalled; Flags: createvalueifdoesntexist
-Root: HKLM32; Subkey: SOFTWARE\Origin\Battlefield 1942\ergc; ValueType: String; ValueName: ergc; ValueData: {code:GenerateCDKey}; Check: not IsRetailInstalled; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: SOFTWARE\Electronic Arts\EA Games\Battlefield 1942\ergc; ValueType: string; ValueData: {code:GenerateCDKey}; Check: IsRetailBtnChecked; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: SOFTWARE\Electronic Arts\Origin\Battlefield 1942\ergc; ValueType: String; ValueData: {code:GenerateCDKey}; Check: not IsRetailBtnChecked; Flags: createvalueifdoesntexist
+Root: HKLM64; SubKey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers; ValueType: string; ValueName: {code:GetInstallPath}\BF1942.exe; ValueData: RUNASADMIN; MinVersion: 6.0; Check: IsInstalledInPF64
+Root: HKLM32; SubKey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers; ValueType: string; ValueName: {code:GetInstallPath}\BF1942.exe; ValueData: RUNASADMIN; MinVersion: 6.0; Check: IsInstalledInPF32
+
 
 [Code]
+var
+  InstallDirPage: TInputDirWizardPage;
+  RetailVerButton: TRadioButton;
+  OriginVerButton: TRadioButton;
+  OldNextButtonOnClick: TNotifyEvent;
+  OriginVerInstalled, RetailVerInstalled: Boolean;
+  OriginPath, RetailPath: String;
+  VersionTextLabel, DestDirTextLabel: TLabel;
+
 { WORKAROUND }
 { Checkboxes and Radio buttons created on runtime do }
 { not scale their height automatically. }
@@ -48,85 +60,138 @@ begin
 	Result := GetDateTimeString('42yyyy/mm/dd1942hhnnss', '1', #0);
 end;
 
-var
-  InstallDirPage: TInputDirWizardPage;
-  RetailVersionButton: TRadioButton;
-  OriginVersionButton: TRadioButton;
-  OldNextButtonOnClick: TNotifyEvent;
-  OriginInstalled, RetailInstalled: Boolean;
-  OriginPath, RetailPath: String;
-  VersionTextLabel, DestDirTextLabel: TLabel;
+function DefaultOriginPath(): String;
+begin
+  Result := ExpandConstant('{pf32}') + '\Origin Games\Battlefield 1942';
+end;
+
+function DefaultRetailPath(): String;
+begin
+  Result := ExpandConstant('{pf32}') + '\EA Games\Battlefield 1942';
+end;
 
 function GetInstallPath(temp: String): String;
 begin
   Result := InstallDirPage.Values[0];
 end;
 
-function IsRetailInstalled(): Boolean;
+function IsBF1942Path(path: String): Boolean;
 begin
-  Result := RetailVersionButton.Checked;
+  Result := DirExists(path) and FileExists(path + '\BF1942.exe');
 end;
 
-function IsOriginInstalled(): Boolean;
+function IsInstalledInPF64(): Boolean;
 begin
-  Result := OriginVersionButton.Checked;
+  Result := IsWin64() and (pos(InstallDirPage.Values[0], (ExpandConstant('{pf32}'))) > 0);
 end;
 
-procedure SetPaths;
+function IsInstalledInPF32(): Boolean;
+begin
+  Result := NOT IsWin64() and (pos(InstallDirPage.Values[0], (ExpandConstant('{pf32}'))) > 0);
+end;
+
+function IsRetailBtnChecked(): Boolean;
+begin
+  Result := RetailVerButton.Checked;
+end;
+
+function IsOriginBtnChecked(): Boolean;
+begin
+  Result := OriginVerButton.Checked;
+end;
+
+procedure SetPathsAndVersion;
 var
 buff: String;
 begin
-  if RegQueryStringValue(HKLM32, 'Software\EA GAMES\Battlefield 1942', 'GAMEDIR', buff) then
-    if DirExists(buff) and FileExists(buff + '\BF1942.exe') then
+  if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\EA GAMES\Battlefield 1942', 'GAMEDIR', buff) then
+    if IsBF1942Path(buff) then
     begin
-        RetailInstalled := true;
+        RetailVerInstalled := true;
         RetailPath := buff;
     end;
-  if RegQueryStringValue(HKLM32, 'Software\Origin\Battlefield 1942', 'GAMEDIR', buff) then
-    if DirExists(buff) and FileExists(buff + '\BF1942.exe') then
+  if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\Origin\Battlefield 1942', 'GAMEDIR', buff) then
+    if IsBF1942Path(buff) then
       begin
-          OriginInstalled := true;
+          OriginVerInstalled := true;
           OriginPath := buff;
       end;
-  if RetailInstalled then
-      if OriginInstalled then
+  if RetailVerInstalled then
+      if OriginVerInstalled then
         begin
             MsgBox('Installations of both retail and Origin versions of Battlefield 1942 are detected, and the former was chosen as target directory. Please change it if needed.',
                     mbInformation, MB_OK);
-            RetailVersionButton.Checked := True;
+            RetailVerButton.Checked := True;
             InstallDirPage.Values[0] := RetailPath;
         end
       else
         begin
-            RetailVersionButton.Checked := True;
+            RetailVerButton.Checked := True;
             InstallDirPage.Values[0] := RetailPath;
         end
   else
-      if OriginInstalled then
+      if OriginVerInstalled then
         begin
-          OriginVersionButton.Checked := True;
+          OriginVerButton.Checked := True;
           InstallDirPage.Values[0] := OriginPath;
         end
       else
-        begin
-          MsgBox('No Battlefield 1942 installations were found, a default installation location will be used.',
-                 mbInformation, MB_OK);
-          InstallDirPage.Values[0] := ExpandConstant('{pf32}') + '\EA Games\Battlefield 1942';
-        end;
+        if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\EA GAMES\Battlefield 1942\ergc', '', buff) then
+          begin
+            RetailVerButton.Checked := True;
+            InstallDirPage.Values[0] := DefaultRetailPath();
+          end
+        else if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\Origin\Battlefield 1942\ergc', '', buff) then
+          begin
+            OriginVerButton.Checked := True;
+            InstallDirPage.Values[0] := DefaultOriginPath();
+          end
+        else
+          begin
+            MsgBox('No Battlefield 1942 installations were found, a default location will be used.',
+                  mbInformation, MB_OK);
+            InstallDirPage.Values[0] := ExpandConstant('{pf32}') + '\EA Games\Battlefield 1942';
+          end;
 end;
 
 procedure NextButtonOnClick(Sender: TObject);
 begin
+  MsgBox(IntToStr(WizardForm.CurPageID) + ' ' + IntToStr(wpInfoBefore), mbInformation, MB_OK);
   if (WizardForm.CurPageID = InstallDirPage.ID) then
-      if not RetailVersionButton.Checked and not OriginVersionButton.Checked then 
+      if not RetailVerButton.Checked and not OriginVerButton.Checked then 
         begin
-          MsgBox('Please select your game version.', mbInformation, MB_OK);
-          exit;
-        end
-      else
-        OldNextButtonOnClick(Sender)
-  else
-    OldNextButtonOnClick(Sender);
+          MsgBox('Select the version of the game:', mbInformation, MB_OK);
+          Exit;
+        end;
+  OldNextButtonOnClick(Sender);
+end;
+
+procedure OriginVerButtonOnClick(Sender: TObject);
+begin
+  if OriginVerInstalled then
+    InstallDirPage.Values[0] := OriginPath
+  else if (InstallDirPage.Values[0] = DefaultRetailPath())
+    or (InstallDirPage.Values[0] = '') then
+    begin
+      InstallDirPage.Values[0] := DefaultOriginPath();
+    end;
+end;
+
+procedure RetailVerButtonOnClick(Sender: TObject);
+begin
+  if RetailVerInstalled then
+    InstallDirPage.Values[0] := RetailPath
+  else if (InstallDirPage.Values[0] = DefaultOriginPath())
+    or (InstallDirPage.Values[0] = '') then
+    begin
+      InstallDirPage.Values[0] := DefaultRetailPath();
+    end;
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if CurPageID = InstallDirPage.ID then
+     SetPathsAndVersion;
 end;
 
 procedure InitializeWizard();
@@ -141,21 +206,21 @@ begin
   VersionTextLabel.Top := InstallDirPage.Edits[0].Top;
   VersionTextLabel.Caption := 'Select game version:';
 
-  RetailVersionButton := TRadioButton.Create(WizardForm);
-  RetailVersionButton.Parent := InstallDirPage.Surface;
-  RetailVersionButton.Top := VersionTextLabel.Top + VersionTextLabel.Height + ScaleY(8);
-  RetailVersionButton.Caption := 'v1.61 Retail';
-  ScaleFixedSizeControl(RetailVersionButton);
+  RetailVerButton := TRadioButton.Create(WizardForm);
+  RetailVerButton.Parent := InstallDirPage.Surface;
+  RetailVerButton.Top := VersionTextLabel.Top + VersionTextLabel.Height + ScaleY(8);
+  RetailVerButton.Caption := 'v1.61 Retail';
+  ScaleFixedSizeControl(RetailVerButton);
   
-  OriginVersionButton := TRadioButton.Create(WizardForm);
-  OriginVersionButton.Parent := InstallDirPage.Surface;
-  OriginVersionButton.Top := RetailVersionButton.Top + RetailVersionButton.Height;
-  OriginVersionButton.Caption := 'v1.612 Origin';
-  ScaleFixedSizeControl(OriginVersionButton);
+  OriginVerButton := TRadioButton.Create(WizardForm);
+  OriginVerButton.Parent := InstallDirPage.Surface;
+  OriginVerButton.Top := RetailVerButton.Top + RetailVerButton.Height;
+  OriginVerButton.Caption := 'v1.612 Origin';
+  ScaleFixedSizeControl(OriginVerButton);
 
   DestDirTextLabel := TLabel.Create(WizardForm);
   DestDirTextLabel.Parent := InstallDirPage.Surface;
-  DestDirTextLabel.Top := OriginVersionButton.Top + OriginVersionButton.Height + ScaleY(8);
+  DestDirTextLabel.Top := OriginVerButton.Top + OriginVerButton.Height + ScaleY(8);
   DestDirTextLabel.Caption := 'Select installation dir:';
 
   InstallDirPage.Buttons[0].Top :=
@@ -166,10 +231,11 @@ begin
     DestDirTextLabel.Top + DestDirTextLabel.Height + ScaleY(8);
   InstallDirPage.Edits[0].Left := InstallDirPage.Edits[0].Left + ScaleX(16);
   InstallDirPage.Edits[0].Width := InstallDirPage.Edits[0].Width - ScaleX(16);
-  InstallDirPage.Edits[0].TabOrder := OriginVersionButton.TabOrder + 1;
+  InstallDirPage.Edits[0].TabOrder := OriginVerButton.TabOrder + 1;
   InstallDirPage.Buttons[0].TabOrder := InstallDirPage.Edits[0].TabOrder + 1;
 
-  SetPaths;
+  RetailVerButton.OnClick := @RetailVerButtonOnClick;
+  OriginVerButton.OnClick := @OriginVerButtonOnClick;
 
   OldNextButtonOnClick := WizardForm.NextButton.OnClick;
   WizardForm.NextButton.OnClick := @NextButtonOnClick;
