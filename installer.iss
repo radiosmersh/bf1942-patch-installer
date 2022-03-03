@@ -209,13 +209,13 @@ begin
   RetailVerButton := TRadioButton.Create(WizardForm);
   RetailVerButton.Parent := InstallDirPage.Surface;
   RetailVerButton.Top := VersionTextLabel.Top + VersionTextLabel.Height + ScaleY(8);
-  RetailVerButton.Caption := 'v1.61 Retail';
+  RetailVerButton.Caption := 'Retail';
   ScaleFixedSizeControl(RetailVerButton);
   
   OriginVerButton := TRadioButton.Create(WizardForm);
   OriginVerButton.Parent := InstallDirPage.Surface;
   OriginVerButton.Top := RetailVerButton.Top + RetailVerButton.Height;
-  OriginVerButton.Caption := 'v1.612 Origin';
+  OriginVerButton.Caption := 'Origin';
   ScaleFixedSizeControl(OriginVerButton);
 
   DestDirTextLabel := TLabel.Create(WizardForm);
