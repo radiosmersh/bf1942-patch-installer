@@ -1,9 +1,9 @@
-Battlefield 1942 v1.61 Retail / v1.612 Origin patched by henk on 23-2-2022
+Battlefield 1942 Retail / Origin v1.61 patched by henk on 23-2-2022
 version 2.1
 
 Fixes:
 ~~~~~~
-* No Origin
+* No CD / No Origin
 * Portable
 * Widescreen support - In game
 * Widescreen support - In menu
