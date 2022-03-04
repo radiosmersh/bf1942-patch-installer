@@ -156,7 +156,6 @@ end;
 
 procedure NextButtonOnClick(Sender: TObject);
 begin
-  MsgBox(IntToStr(WizardForm.CurPageID) + ' ' + IntToStr(wpInfoBefore), mbInformation, MB_OK);
   if (WizardForm.CurPageID = InstallDirPage.ID) then
       if not RetailVerButton.Checked and not OriginVerButton.Checked then 
         begin
