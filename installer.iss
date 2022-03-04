@@ -29,8 +29,8 @@ Source: files\Origin\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreve
 
 
 [Registry]
-Root: HKLM; Subkey: SOFTWARE\Electronic Arts\EA Games\Battlefield 1942\ergc; ValueType: string; ValueData: {code:GenerateCDKey}; Check: IsRetailBtnChecked; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: SOFTWARE\Electronic Arts\Origin\Battlefield 1942\ergc; ValueType: String; ValueData: {code:GenerateCDKey}; Check: not IsRetailBtnChecked; Flags: createvalueifdoesntexist
+Root: HKLM32; Subkey: SOFTWARE\Electronic Arts\EA Games\Battlefield 1942\ergc; ValueType: string; ValueData: {code:GenerateCDKey}; Check: IsRetailBtnChecked; Flags: createvalueifdoesntexist
+Root: HKLM32; Subkey: SOFTWARE\Electronic Arts\Origin\Battlefield 1942\ergc; ValueType: String; ValueData: {code:GenerateCDKey}; Check: not IsRetailBtnChecked; Flags: createvalueifdoesntexist
 Root: HKLM64; SubKey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers; ValueType: string; ValueName: {code:GetInstallPath}\BF1942.exe; ValueData: RUNASADMIN; MinVersion: 6.0; Check: IsInstalledInPF64
 Root: HKLM32; SubKey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers; ValueType: string; ValueName: {code:GetInstallPath}\BF1942.exe; ValueData: RUNASADMIN; MinVersion: 6.0; Check: IsInstalledInPF32
 
@@ -104,13 +104,13 @@ procedure SetPathsAndVersion;
 var
 buff: String;
 begin
-  if RegQueryStringValue(HKLM, 'SOFTWARE\EA GAMES\Battlefield 1942', 'GAMEDIR', buff) then
+  if RegQueryStringValue(HKLM32, 'SOFTWARE\EA GAMES\Battlefield 1942', 'GAMEDIR', buff) then
     if IsBF1942Path(buff) then
     begin
         RetailVerInstalled := true;
         RetailPath := buff;
     end;
-  if RegQueryStringValue(HKLM, 'SOFTWARE\Origin\Battlefield 1942', 'GAMEDIR', buff) then
+  if RegQueryStringValue(HKLM32, 'SOFTWARE\Origin\Battlefield 1942', 'GAMEDIR', buff) then
     if IsBF1942Path(buff) then
       begin
           OriginVerInstalled := true;
