@@ -136,12 +136,12 @@ begin
           InstallDirPage.Values[0] := OriginPath;
         end
       else
-        if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\EA GAMES\Battlefield 1942\ergc', '', buff) then
+        if RegQueryStringValue(HKLM32, 'SOFTWARE\Electronic Arts\EA GAMES\Battlefield 1942\ergc', '', buff) then
           begin
             RetailVerButton.Checked := True;
             InstallDirPage.Values[0] := DefaultRetailPath();
           end
-        else if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\Origin\Battlefield 1942\ergc', '', buff) then
+        else if RegQueryStringValue(HKLM32, 'SOFTWARE\Electronic Arts\Origin\Battlefield 1942\ergc', '', buff) then
           begin
             OriginVerButton.Checked := True;
             InstallDirPage.Values[0] := DefaultOriginPath();
