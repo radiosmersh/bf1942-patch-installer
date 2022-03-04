@@ -104,13 +104,13 @@ procedure SetPathsAndVersion;
 var
 buff: String;
 begin
-  if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\EA GAMES\Battlefield 1942', 'GAMEDIR', buff) then
+  if RegQueryStringValue(HKLM, 'SOFTWARE\EA GAMES\Battlefield 1942', 'GAMEDIR', buff) then
     if IsBF1942Path(buff) then
     begin
         RetailVerInstalled := true;
         RetailPath := buff;
     end;
-  if RegQueryStringValue(HKLM, 'SOFTWARE\Electronic Arts\Origin\Battlefield 1942', 'GAMEDIR', buff) then
+  if RegQueryStringValue(HKLM, 'SOFTWARE\Origin\Battlefield 1942', 'GAMEDIR', buff) then
     if IsBF1942Path(buff) then
       begin
           OriginVerInstalled := true;
