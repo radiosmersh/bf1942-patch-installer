@@ -87,7 +87,7 @@ end;
 
 function IsInstalledInPF32(): Boolean;
 begin
-  Result := (not IsWin64()) and (pos(ExpandConstant('{pf32}'), InstallDirPage.Values[0]) > 0);
+  Result := (not IsWin64()) and (pos(Lowercase(ExpandConstant('{pf32}')), Lowercase(InstallDirPage.Values[0])) > 0);
 end;
 
 function IsRetailBtnChecked(): Boolean;
