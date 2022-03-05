@@ -25,7 +25,7 @@ Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack2; Flags:
 Source: files\Retail\contentCrc32.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailBtnChecked
 Source: files\Retail\Init.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailBtnChecked
 Source: {code:GetInstallPath}\BF1942.exe; DestDir: {code:GetInstallPath}; DestName: BF1942.exe.bak; Flags: external skipifsourcedoesntexist;
-Source: files\Origin\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: not IsOriginBtnChecked
+Source: files\Origin\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsOriginBtnChecked
 
 
 [Registry]
