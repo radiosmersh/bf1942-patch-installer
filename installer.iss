@@ -12,6 +12,7 @@ DisableReadyPage=yes
 Uninstallable=No
 InfoBeforeFile=infobefore.txt
 PrivilegesRequired=admin
+OutputDir=dist
 OutputBaseFilename=bf1942_patch
 SetupIconFile=gfx\bf1942.ico
 Compression=lzma2/max
