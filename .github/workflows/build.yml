@@ -16,11 +16,6 @@ jobs:
     - name: Install Inno Setup
       run: ./installer.exe /verysilent /allusers /dir=inno-setup
 
-    - uses: actions/download-artifact@master
-      with:
-        name: BF1942-patch-installer
-        path: setup/source
-
     - name: Building the installer
       run: |
         "inno-setup/iscc.exe" "installer.iss"
