@@ -1,0 +1,5 @@
+files/Origin/BF1942.exe filter=lfs diff=lfs merge=lfs -text
+files/Retail/BF1942.exe filter=lfs diff=lfs merge=lfs -text
+files/Retail/contentCrc32.con filter=lfs diff=lfs merge=lfs -text
+files/Retail/init.con filter=lfs diff=lfs merge=lfs -text
+files/Retail/Mod.dll filter=lfs diff=lfs merge=lfs -text
