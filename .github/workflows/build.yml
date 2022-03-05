@@ -14,7 +14,9 @@ jobs:
       run: curl -L -o installer.exe http://files.jrsoftware.org/is/5/innosetup-${{ env.INNO_VERSION }}.exe
 
     - name: Install Inno Setup
-      run: ./installer.exe /verysilent /allusers /dir=inno-setup
+      run: |
+        installer.exe /verysilent /allusers /dir=inno-setup
+      shell: cmd
 
     - name: Building the installer
       run: |
