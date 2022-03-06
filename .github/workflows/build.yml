@@ -9,6 +9,8 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+      with: 
+        lfs: 'true'
 
     - name: Download Inno Setup installer
       run: curl -L -o installer.exe http://files.jrsoftware.org/is/5/innosetup-${{ env.INNO_VERSION }}.exe
