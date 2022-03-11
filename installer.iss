@@ -158,11 +158,18 @@ end;
 procedure NextButtonOnClick(Sender: TObject);
 begin
   if (WizardForm.CurPageID = InstallDirPage.ID) then
+    begin
       if not RetailVerButton.Checked and not OriginVerButton.Checked then 
         begin
           MsgBox('Select the version of the game:', mbInformation, MB_OK);
           Exit;
         end;
+      if not IsBF1942Path(InstallDirPage.Values[0]) then
+        begin
+          MsgBox('Selected destination folder is not a valid game directory.', mbInformation, MB_OK);
+          Exit;
+        end;
+    end;
   OldNextButtonOnClick(Sender);
 end;
 
