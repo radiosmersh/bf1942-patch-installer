@@ -19,13 +19,13 @@ Compression=lzma2/max
 SolidCompression=yes
 
 [Files]
+Source: {code:GetInstallPath}\BF1942.exe; DestDir: {code:GetInstallPath}; DestName: BF1942.exe.bak; Flags: external skipifsourcedoesntexist;
 Source: files\Retail\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
 Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
 Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack1; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
 Source: files\Retail\Mod.dll; DestDir: {code:GetInstallPath}\Mods\Xpack2; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsRetailBtnChecked
 Source: files\Retail\contentCrc32.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailBtnChecked
 Source: files\Retail\Init.con; DestDir: {code:GetInstallPath}\Mods\bf1942; Flags: ignoreversion; Check: IsRetailBtnChecked
-Source: {code:GetInstallPath}\BF1942.exe; DestDir: {code:GetInstallPath}; DestName: BF1942.exe.bak; Flags: external skipifsourcedoesntexist;
 Source: files\Origin\BF1942.exe; DestDir: {code:GetInstallPath}; Flags: ignoreversion onlyifdestfileexists restartreplace; Check: IsOriginBtnChecked
 
 
